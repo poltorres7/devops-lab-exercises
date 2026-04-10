@@ -19,7 +19,7 @@ public class MetricsGapApplication {
           .register();
 
   public static void main(String[] args) throws Exception {
-    HTTPServer metricsServer = new HTTPServer(new InetSocketAddress(9404), true);
+    HTTPServer metricsServer = new HTTPServer(9404);
 
     HttpServer appServer = HttpServer.create(new InetSocketAddress(8080), 0);
     appServer.createContext("/status", new StatusHandler());
