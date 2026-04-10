@@ -20,13 +20,23 @@ pipeline {
     )
     string(
       name: 'IMAGE_TAG',
-      defaultValue: 'latest',
-      description: 'Container image tag to publish.'
+      defaultValue: '',
+      description: 'Container image tag to publish. Leave empty to use the Git short commit hash.'
     )
     booleanParam(
       name: 'PUSH_LATEST',
-      defaultValue: true,
+      defaultValue: false,
       description: 'Also publish the latest tag when IMAGE_TAG is different.'
+    )
+    booleanParam(
+      name: 'UPDATE_GITOPS',
+      defaultValue: false,
+      description: 'Update the exercise Helm values with the built image tag and push the change back to Git.'
+    )
+    string(
+      name: 'GIT_PUSH_CREDENTIALS_ID',
+      defaultValue: '',
+      description: 'Optional Jenkins username/password credential id for pushing GitOps tag updates back to GitHub.'
     )
   }
 
@@ -97,23 +107,34 @@ spec:
           if (!env.IMAGE_NAME) {
             error("Unsupported exercise directory: ${params.EXERCISE_DIR}")
           }
+
+          env.GITOPS_VALUES_FILE = "exercises/${params.EXERCISE_DIR}/helm/values.yaml"
         }
 
         container('git') {
           sh '''
             set -eu
             rm -rf source
-            git clone --depth 1 --branch "${GIT_REF}" "${REPO_URL}" source
+            git clone "${REPO_URL}" source
+            cd source
+            git checkout "${GIT_REF}"
           '''
+          script {
+            env.GIT_SHORT_SHA = sh(
+              script: 'cd source && git rev-parse --short HEAD',
+              returnStdout: true
+            ).trim()
+            env.EFFECTIVE_IMAGE_TAG = params.IMAGE_TAG?.trim() ? params.IMAGE_TAG.trim() : env.GIT_SHORT_SHA
+          }
         }
 
         container('kaniko') {
           sh '''
             set -eu
             CONTEXT_DIR="${WORKSPACE}/source/exercises/${EXERCISE_DIR}/app"
-            DESTINATIONS="--destination=${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+            DESTINATIONS="--destination=${REGISTRY}/${IMAGE_NAME}:${EFFECTIVE_IMAGE_TAG}"
 
-            if [ "${PUSH_LATEST}" = "true" ] && [ "${IMAGE_TAG}" != "latest" ]; then
+            if [ "${PUSH_LATEST}" = "true" ] && [ "${EFFECTIVE_IMAGE_TAG}" != "latest" ]; then
               DESTINATIONS="${DESTINATIONS} --destination=${REGISTRY}/${IMAGE_NAME}:latest"
             fi
 
@@ -126,6 +147,45 @@ spec:
               --snapshot-mode=redo \
               --use-new-run
           '''
+        }
+
+        script {
+          currentBuild.displayName = "#${env.BUILD_NUMBER} ${params.EXERCISE_DIR} ${env.EFFECTIVE_IMAGE_TAG}"
+          currentBuild.description = "${env.IMAGE_NAME}:${env.EFFECTIVE_IMAGE_TAG}"
+        }
+
+        container('git') {
+          script {
+            if (params.UPDATE_GITOPS) {
+              if (!params.GIT_PUSH_CREDENTIALS_ID?.trim()) {
+                error('UPDATE_GITOPS=true requires GIT_PUSH_CREDENTIALS_ID.')
+              }
+
+              withCredentials([usernamePassword(
+                credentialsId: params.GIT_PUSH_CREDENTIALS_ID.trim(),
+                usernameVariable: 'GIT_USERNAME',
+                passwordVariable: 'GIT_PASSWORD'
+              )]) {
+                sh '''
+                  set -eu
+                  cd source
+                  git config user.name "Jenkins"
+                  git config user.email "jenkins@lab.local"
+                  sed -i.bak -E "s#^(  tag: ).*#\\1${EFFECTIVE_IMAGE_TAG}#" "${GITOPS_VALUES_FILE}"
+                  rm -f "${GITOPS_VALUES_FILE}.bak"
+
+                  if git diff --quiet -- "${GITOPS_VALUES_FILE}"; then
+                    exit 0
+                  fi
+
+                  git add "${GITOPS_VALUES_FILE}"
+                  git commit -m "Update ${EXERCISE_DIR} image tag to ${EFFECTIVE_IMAGE_TAG}"
+                  git remote set-url origin "https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/poltorres7/devops-lab-exercices.git"
+                  git push origin HEAD:main
+                '''
+              }
+            }
+          }
         }
       }
     }

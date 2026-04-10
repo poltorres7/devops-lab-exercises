@@ -27,3 +27,12 @@ Useful build parameters:
 - `GIT_REF`
 - `IMAGE_TAG`
 - `PUSH_LATEST`
+- `UPDATE_GITOPS`
+- `GIT_PUSH_CREDENTIALS_ID`
+
+Tagging behavior:
+
+- if `IMAGE_TAG` is empty, the pipeline uses the Git short commit hash
+- this is the recommended immutable tag format for Argo CD deployments
+- if `UPDATE_GITOPS=true`, the pipeline updates `exercises/<name>/helm/values.yaml` with that tag and pushes the change back to GitHub
+- `UPDATE_GITOPS=true` requires a Jenkins username/password credential that can push to the repo
