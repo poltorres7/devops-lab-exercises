@@ -12,7 +12,9 @@ The lab environment is built around a small cloud-native platform with the follo
 - **Jenkins** as the CI/CD entrypoint for building and publishing exercise images
 - **Kaniko** for container image builds inside Kubernetes
 - **DigitalOcean Container Registry** for storing built images
-- **Grafana** for metrics visualization and dashboard creation
+- **Grafana** for metrics visualization, logs review, and dashboard creation
+- **Argo CD** for application deployment visibility and synchronization status
+- **Loki** as the log backend surfaced through Grafana
 
 Each exercise represents an isolated scenario inside this platform. You may need to inspect build pipelines, Kubernetes resources, runtime behavior, logs, metrics, or dashboards depending on the challenge.
 
@@ -32,6 +34,7 @@ This includes:
 - **Access to Kubernetes**, limited to the **workload nodes/resources** used for the exercises
 - **Access to Jenkins** to inspect, edit, or execute builds
 - **Access to Grafana** to review metrics and create dashboards if needed
+- **Access to Argo CD** to inspect application state, sync status, and deployment details
 
 Make sure to verify your access before starting with any exercise.
 
