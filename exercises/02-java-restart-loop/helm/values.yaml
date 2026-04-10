@@ -1,6 +1,6 @@
 image:
   repository: registry.digitalocean.com/devopslabregistry/java-restart-loop
-  tag: latest
+  tag: f74057f
   pullPolicy: IfNotPresent
 
 nodeSelector:
