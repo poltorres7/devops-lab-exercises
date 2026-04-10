@@ -1,0 +1,21 @@
+image:
+  repository: registry.digitalocean.com/devopslabregistry/java-resource-starvation
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 100m
+    memory: 96Mi
+
+nodeSelector:
+  workload: lab
+
+tolerations:
+  - key: dedicated
+    operator: Equal
+    value: lab
+    effect: NoSchedule

@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-restart-loop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: java-restart-loop
+  template:
+    metadata:
+      labels:
+        app: java-restart-loop
+    spec:
+      nodeSelector:
+        workload: {{ .Values.nodeSelector.workload | quote }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8080

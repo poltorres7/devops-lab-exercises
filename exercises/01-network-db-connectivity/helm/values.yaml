@@ -1,0 +1,20 @@
+image:
+  repository: registry.digitalocean.com/devopslabregistry/network-db-connectivity
+  tag: latest
+  pullPolicy: IfNotPresent
+
+db:
+  host: mysql-wrong-host.internal.example
+  port: "25060"
+  name: lab
+  user: lab_user
+  password: change-me
+
+nodeSelector:
+  workload: lab
+
+tolerations:
+  - key: dedicated
+    operator: Equal
+    value: lab
+    effect: NoSchedule

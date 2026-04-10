@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: exercise-01-network-db-connectivity
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: exercise-01
+  source:
+    repoURL: REPLACE_WITH_GIT_REPO_URL
+    targetRevision: HEAD
+    path: exercises/01-network-db-connectivity/helm
+    helm:
+      releaseName: exercise-01
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
