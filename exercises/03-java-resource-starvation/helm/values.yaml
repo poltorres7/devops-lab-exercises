@@ -3,6 +3,9 @@ image:
   tag: bf79f34
   pullPolicy: IfNotPresent
 
+imagePullSecrets:
+  - name: devopslabregistry
+
 resources:
   requests:
     cpu: 50m

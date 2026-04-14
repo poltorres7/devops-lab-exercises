@@ -3,6 +3,9 @@ image:
   tag: c63f0ec-ci
   pullPolicy: IfNotPresent
 
+imagePullSecrets:
+  - name: devopslabregistry
+
 nodeSelector:
   workload: lab
 

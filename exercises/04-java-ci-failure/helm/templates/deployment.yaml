@@ -12,6 +12,8 @@ spec:
       labels:
         app: java-ci-failure
     spec:
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
       nodeSelector:
         workload: {{ .Values.nodeSelector.workload | quote }}
       tolerations:

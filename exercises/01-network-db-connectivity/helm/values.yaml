@@ -3,6 +3,9 @@ image:
   tag: bf79f34
   pullPolicy: IfNotPresent
 
+imagePullSecrets:
+  - name: devopslabregistry
+
 db:
   host: db-router.svc.cluster.internal
   port: "13306"

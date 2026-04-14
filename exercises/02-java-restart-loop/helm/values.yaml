@@ -3,6 +3,9 @@ image:
   tag: bf79f34
   pullPolicy: IfNotPresent
 
+imagePullSecrets:
+  - name: devopslabregistry
+
 app:
   windowStart: "2026-13-01T08:00:00Z"
 
