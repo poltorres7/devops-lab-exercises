@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lane-b
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: exercise-02
+  source:
+    repoURL: https://github.com/poltorres7/devops-lab-exercices.git
+    targetRevision: HEAD
+    path: tracks/track-b/helm
+    helm:
+      releaseName: exercise-02
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

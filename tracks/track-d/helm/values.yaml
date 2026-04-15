@@ -1,0 +1,16 @@
+image:
+  repository: registry.digitalocean.com/devopslabregistry/java-ci-failure
+  tag: c63f0ec-ci
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: devopslabregistry
+
+nodeSelector:
+  workload: lab
+
+tolerations:
+  - key: dedicated
+    operator: Equal
+    value: lab
+    effect: NoSchedule

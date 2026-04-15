@@ -5,13 +5,13 @@ pipeline {
     choice(
       name: 'EXERCISE_DIR',
       choices: [
-        '01-network-db-connectivity',
-        '02-java-restart-loop',
-        '03-java-resource-starvation',
-        '04-java-ci-failure',
-        '05-java-metrics-gap'
+        'track-a',
+        'track-b',
+        'track-c',
+        'track-d',
+        'track-e'
       ],
-      description: 'Exercise directory to build from the repo.'
+      description: 'Track directory to build from the repo.'
     )
     string(
       name: 'GIT_REF',
@@ -96,11 +96,11 @@ spec:
       steps {
         script {
           def images = [
-            '01-network-db-connectivity': 'network-db-connectivity',
-            '02-java-restart-loop': 'java-restart-loop',
-            '03-java-resource-starvation': 'java-resource-starvation',
-            '04-java-ci-failure': 'java-ci-failure',
-            '05-java-metrics-gap': 'java-metrics-gap',
+            'track-a': 'network-db-connectivity',
+            'track-b': 'java-restart-loop',
+            'track-c': 'java-resource-starvation',
+            'track-d': 'java-ci-failure',
+            'track-e': 'java-metrics-gap',
           ]
 
           env.IMAGE_NAME = images[params.EXERCISE_DIR]
@@ -108,7 +108,7 @@ spec:
             error("Unsupported exercise directory: ${params.EXERCISE_DIR}")
           }
 
-          env.GITOPS_VALUES_FILE = "exercises/${params.EXERCISE_DIR}/helm/values.yaml"
+          env.GITOPS_VALUES_FILE = "tracks/${params.EXERCISE_DIR}/helm/values.yaml"
         }
 
         container('git') {
@@ -131,7 +131,7 @@ spec:
         container('kaniko') {
           sh '''
             set -eu
-            CONTEXT_DIR="${WORKSPACE}/source/exercises/${EXERCISE_DIR}/app"
+            CONTEXT_DIR="${WORKSPACE}/source/tracks/${EXERCISE_DIR}/app"
             DESTINATIONS="--destination=${REGISTRY}/${IMAGE_NAME}:${EFFECTIVE_IMAGE_TAG}"
 
             if [ "${PUSH_LATEST}" = "true" ] && [ "${EFFECTIVE_IMAGE_TAG}" != "latest" ]; then

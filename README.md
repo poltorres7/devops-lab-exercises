@@ -68,5 +68,5 @@ Tagging behavior:
 
 - If `IMAGE_TAG` is empty, the pipeline uses the Git short commit hash.
 - This is the recommended immutable tag format for Argo CD deployments.
-- If `UPDATE_GITOPS=true`, the pipeline updates `exercises/<name>/helm/values.yaml` with that tag and pushes the change back to GitHub.
+- If `UPDATE_GITOPS=true`, the pipeline updates `tracks/<name>/helm/values.yaml` with that tag and pushes the change back to GitHub.
 - `UPDATE_GITOPS=true` requires a Jenkins username/password credential that can push to the repository.
