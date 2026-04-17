@@ -1,6 +1,6 @@
 image:
   repository: registry.digitalocean.com/devopslabregistry/network-db-connectivity
-  tag: latest
+  tag: b63f9ee
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
