@@ -1,6 +1,6 @@
 image:
   repository: registry.digitalocean.com/devopslabregistry/java-resource-starvation
-  tag: 503acce
+  tag: 30deb33
   pullPolicy: IfNotPresent
 
 imagePullSecrets:

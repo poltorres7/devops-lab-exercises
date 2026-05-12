@@ -1,6 +1,6 @@
 image:
   repository: registry.digitalocean.com/devopslabregistry/java-metrics-gap
-  tag: 503acce
+  tag: 30deb33
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
